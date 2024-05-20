@@ -1,14 +1,14 @@
 #include <stdio.h>
-#include "mac.h"
-#include "ps3.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_wifi.h"
-#include "esp_system.h"
-#include "spi_flash_mmap.h"
+#include <esp_change_mac_address.h>
+#include <ps3.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <esp_wifi.h>
+#include <esp_system.h>
+#include <spi_flash_mmap.h>
 
 #define MAC_ADDR_SIZE 8
-/*
+
 void controller_event_cb( ps3_t ps3, ps3_event_t event )
 {
     // Event handling here...
@@ -107,14 +107,21 @@ void controller_event_cb( ps3_t ps3, ps3_event_t event )
     if ( event.button_up.r2 )
         printf("The user released the r2 button\r\n");
 }
-*/
+
 void app_main(void)
 {
     uint8_t mac_address[MAC_ADDR_SIZE] = {0x98, 0xB6, 0xA0, 0xF3, 0x8D, 0x31};
-    int set_mac;
     nvs_ini();
     get_mac_address();
-    set_mac = set_mac_address(mac_address);
-    //ps3SetEventCallback(controller_event_cb);
-    //if(set_mac) ps3SetBluetoothMacAddress(mac_address);
+    set_mac_address(mac_address);
+    ps3SetEventCallback(controller_event_cb);
+    ps3SetBluetoothMacAddress(mac_address);
+    ps3Init();
+    while(!ps3IsConnected())
+    {
+        vTaskDelay(10/portTICK_PERIOD_MS);
+    }
+    printf("[PS3] El Joystick se ha enlazado a la ESP32 correctamente!");
+    while(1) vTaskDelay(1000/portTICK_PERIOD_MS);
+    esp_restart();
 }
