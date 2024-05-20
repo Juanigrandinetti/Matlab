@@ -121,7 +121,7 @@ void app_main(void)
     {
         vTaskDelay(10/portTICK_PERIOD_MS);
     }
-    printf("[PS3] El Joystick se ha enlazado a la ESP32 correctamente!");
+    printf("[PS3] El Joystick se ha enlazado a la ESP32 correctamente!\n");
     while(1) vTaskDelay(1000/portTICK_PERIOD_MS);
     esp_restart();
 }
